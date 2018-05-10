@@ -18,43 +18,36 @@ func main() {
 	fieldKeys := []string{"method", "error"}
 	requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
 		Namespace: "my_group",
-		Subsystem: "string_service",
+		Subsystem: "forecast_service",
 		Name:      "request_count",
 		Help:      "Number of requests received.",
 	}, fieldKeys)
 	requestLatency := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
 		Namespace: "my_group",
-		Subsystem: "string_service",
+		Subsystem: "forecast_service",
 		Name:      "request_latency_microseconds",
 		Help:      "Total duration of requests in microseconds.",
 	}, fieldKeys)
 	countResult := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
 		Namespace: "my_group",
-		Subsystem: "string_service",
+		Subsystem: "forecast_service",
 		Name:      "count_result",
 		Help:      "The result of each count method.",
 	}, []string{}) // no fields here
 
-	var svc StringService
-	svc = stringService{}
+	var svc ForecastService
+	svc = forecastService{}
 	svc = loggingMiddleware{logger, svc}
 	svc = instrumentingMiddleware{requestCount, requestLatency, countResult, svc}
 
-	uppercaseHandler := httptransport.NewServer(
+	forecastHandler := httptransport.NewServer(
 		makeUppercaseEndpoint(svc),
-		decodeUppercaseRequest,
+		decodeGetForecastRequest,
 		encodeResponse,
 	)
 
-	countHandler := httptransport.NewServer(
-		makeCountEndpoint(svc),
-		decodeCountRequest,
-		encodeResponse,
-	)
-
-	http.Handle("/uppercase", uppercaseHandler)
-	http.Handle("/count", countHandler)
+	http.Handle("/forecast", forecastHandler)
 	http.Handle("/metrics", promhttp.Handler())
-	logger.Log("msg", "HTTP", "addr", ":8080")
-	logger.Log("err", http.ListenAndServe(":8080", nil))
+	logger.Log("msg", "HTTP", "addr", ":58080")
+	logger.Log("err", http.ListenAndServe(":58080", nil))
 }
