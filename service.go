@@ -29,19 +29,19 @@ type ForecastService interface {
 }
 */
 type Forecast struct {
-	Timestamp      int32
-	Temperature    float32
-	TemperatureMin float32
-	TemperatureMax float32
-	PressureSea    float32
-	PressureGround float32
-	Humidity       float32
-	WeatherID      int32
-	Cloudiness     float32
-	WindSpeed      float32
-	WindDirection  float32
-	Rain3h         float32
-	Snow3h         float32
+	Timestamp      int32   `json:"timestamp"`
+	Temperature    float32 `json:"temperature"`
+	TemperatureMin float32 `json:"temperatureMin"`
+	TemperatureMax float32 `json:"temperatureMax"`
+	PressureSea    float32 `json:"pressureSea"`
+	PressureGround float32 `json:"pressureGround"`
+	Humidity       float32 `json:"humidity"`
+	WeatherID      int32   `json:"weatherId"`
+	Cloudiness     float32 `json:"cloudiness"`
+	WindSpeed      float32 `json:"windSpeed"`
+	WindDirection  float32 `json:"windDirection"`
+	Rain3h         float32 `json:"rain3h"`
+	Snow3h         float32 `json:"snow3h"`
 }
 
 type forecastService struct{}
