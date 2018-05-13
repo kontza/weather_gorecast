@@ -11,7 +11,7 @@ import (
 func makeUppercaseEndpoint(svc ForecastService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(getForecastRequest)
-		v, err := svc.GetForecast(req.lat, req.lon)
+		v, err := svc.GetForecast(req.Lat, req.Lon)
 		if err != nil {
 			return getForecastResponse{v, err.Error()}, nil
 		}
@@ -32,11 +32,11 @@ func encodeResponse(_ context.Context, w http.ResponseWriter, response interface
 }
 
 type getForecastRequest struct {
-	lat float32 `json:"lat"`
-	lon float32 `json:"lon"`
+	Lat float32 `json:"lat"`
+	Lon float32 `json:"lon"`
 }
 
 type getForecastResponse struct {
-	V   []Forecast `json:"v"`
+	V   []Forecast `json:"forecast"`
 	Err string     `json:"err,omitempty"`
 }

@@ -2,6 +2,13 @@ package main
 
 import (
 	"errors"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os"
+
+	"github.com/go-kit/kit/log"
+	"github.com/spf13/viper"
 )
 
 // ForecastService provides operations on strings.
@@ -46,7 +53,50 @@ type Forecast struct {
 
 type forecastService struct{}
 
+func readConfig() error {
+	viper.SetConfigName("config")
+	viper.AddConfigPath("/etc/weather_gorecast/")
+	viper.AddConfigPath("$HOME/.weather_gorecast")
+	viper.AddConfigPath(".")
+	return viper.ReadInConfig()
+}
+
+func buildUrl(lat float32, lon float32) (string, error) {
+	req, err := http.NewRequest("GET", "https://api.openweathermap.org/data/2.5/forecast", nil)
+	if err != nil {
+		return "", err
+	}
+
+	q := req.URL.Query()
+	q.Add("appid", viper.GetString("api_key"))
+	q.Add("lat", fmt.Sprintf("%.6f", lat))
+	q.Add("lon", fmt.Sprintf("%.6f", lon))
+	req.URL.RawQuery = q.Encode()
+	return req.URL.String(), nil
+}
+
 func (forecastService) GetForecast(lat float32, lon float32) ([]Forecast, error) {
+	var err error
+	if err = readConfig(); err != nil {
+		return nil, err
+	}
+	logger := log.NewLogfmtLogger(os.Stderr)
+	logger.Log("lat", lat, "lon", lon)
+	var url string
+	if url, err = buildUrl(lat, lon); err != nil {
+		return nil, err
+	}
+	var response *http.Response
+	if response, err = http.Get(url); err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+	var contents []byte
+	if contents, err = ioutil.ReadAll(response.Body); err != nil {
+		return nil, err
+	}
+	logger.Log("contents", contents)
 	retVal := []Forecast{{
 		1525952133, 20, 20, 20, 1002, 1002, 96, 200, 0, 7, 180, 0, 0,
 	}}

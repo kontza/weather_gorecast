@@ -1,3 +1,4 @@
 vendor
-weather-gorecast
-weather_?orecast
+weather??orecast
+config.yaml
+result.json
