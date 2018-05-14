@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/patrickmn/go-cache"
+
 	"github.com/go-kit/kit/log"
+	"github.com/patrickmn/go-cache"
 )
 
 type cachingMiddleware struct {
@@ -18,9 +19,8 @@ func (mw cachingMiddleware) GetForecast(lat float32, lon float32) (output *Forec
 		mw.logger.Log("Serving from cache.")
 		retVal := x.(ForecastAPIResponse)
 		return &retVal, nil
-	} else {
-		output, err = mw.next.GetForecast(lat, lon)
-		mw.cache.Set(key, *output, cache.DefaultExpiration)
-		return
 	}
+	output, err = mw.next.GetForecast(lat, lon)
+	mw.cache.Set(key, *output, cache.DefaultExpiration)
+	return
 }
