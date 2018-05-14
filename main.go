@@ -6,10 +6,11 @@ import (
 
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-
 	"github.com/go-kit/kit/log"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	httptransport "github.com/go-kit/kit/transport/http"
+	"time"
+	"github.com/patrickmn/go-cache"
 )
 
 func main() {
@@ -34,9 +35,12 @@ func main() {
 		Name:      "count_result",
 		Help:      "The result of each count method.",
 	}, []string{}) // no fields here
+	var c *cache.Cache
+	c = cache.New(time.Minute, 2*time.Minute)
 
 	var svc ForecastService
 	svc = forecastService{}
+	svc = cachingMiddleware{c, logger, svc}
 	svc = loggingMiddleware{logger, svc}
 	svc = instrumentingMiddleware{requestCount, requestLatency, countResult, svc}
 

@@ -14,7 +14,7 @@ type instrumentingMiddleware struct {
 	next           ForecastService
 }
 
-func (mw instrumentingMiddleware) GetForecast(lat float32, lon float32) (output []Forecast, err error) {
+func (mw instrumentingMiddleware) GetForecast(lat float32, lon float32) (output *ForecastAPIResponse, err error) {
 	defer func(begin time.Time) {
 		lvs := []string{"method", "GetForecast", "error", fmt.Sprint(err != nil)}
 		mw.requestCount.With(lvs...).Add(1)
