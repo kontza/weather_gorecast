@@ -8,12 +8,13 @@ import (
 	"github.com/go-kit/kit/endpoint"
 )
 
-func makeUppercaseEndpoint(svc ForecastService) endpoint.Endpoint {
+func makeForecastEndpoint(svc ForecastService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(Coordinates)
 		v, err := svc.GetForecast(req.Lat, req.Lon)
 		if err != nil {
-			return getForecastResponse{*v, err.Error()}, nil
+			foo := ForecastAPIResponse{}
+			return getForecastResponse{foo, err.Error()}, nil
 		}
 		return getForecastResponse{*v, ""}, nil
 	}
