@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/go-kit/kit/log"
-	"fmt"
 )
 
 type loggingMiddleware struct {
@@ -14,11 +13,17 @@ type loggingMiddleware struct {
 
 func (mw loggingMiddleware) GetForecast(lat float32, lon float32) (output *ForecastAPIResponse, err error) {
 	defer func(begin time.Time) {
+		var count int32
+		if output != nil {
+			count = output.Cnt
+		} else {
+			count = -1
+		}
 		_ = mw.logger.Log(
 			"method", "GetForecast",
 			"lat", lat,
 			"lon", lon,
-			"output", fmt.Sprintf("%v, %d rows", output.City.Coord, output.Cnt),
+			"rows", count,
 			"err", err,
 			"took", time.Since(begin),
 		)
