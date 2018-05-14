@@ -44,8 +44,7 @@ type ForecastService interface {
                 "humidity": 87,
                 "temp_kf": 0.26
             },
-            "weather": [
-            {
+            "weather": [{
                 "id": 804,
                 "main": "Clouds",
                 "description": "overcast clouds",
@@ -98,7 +97,7 @@ type wind struct {
 type forecast struct {
 	Dt           int64        `json:"dt"`
 	MainForecast mainForecast `json:"main"`
-	Weather      weather      `json:"weather"`
+	Weather      []weather    `json:"weather"`
 	Clouds       clouds       `json:"clouds"`
 	Wind         wind         `json:"wind"`
 }
