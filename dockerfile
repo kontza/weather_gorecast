@@ -1,13 +1,15 @@
 FROM golang:1-alpine as builder
 
+ARG PACKAGE_SOURCE
+ARG PACKAGE_APP
+
 # Basic requirements.
-RUN apk update && apk --no-cache add git
+RUN apk update \
+    && apk --no-cache add git \
+    && go get -u $PACKAGE_SOURCE
 
 # Set our workdir to our current service in the gopath
-WORKDIR /go/src/github.com/kontza/weather-gorecast
-
-# Copy the current code into our workdir
-COPY . .
+WORKDIR $GOPATH/src/$PACKAGE_SOURCE
 
 # Here we're pulling in godep, which is a dependency manager tool,
 # we're going to use dep instead of go get, to get around a few
@@ -27,6 +29,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo .
 # image.
 FROM alpine:latest
 
+ARG PACKAGE_SOURCE
+ARG PACKAGE_APP
+
 # Security related package, good to have.
 RUN apk update && apk --no-cache add ca-certificates
 
@@ -38,9 +43,9 @@ WORKDIR /app
 # we pull the binary from the container named `builder`, within
 # this build context. This reaches into our previous image, finds
 # the binary we built, and pulls it into this container. Amazing!
-COPY --from=builder /go/src/github.com/kontza/weather-gorecast/weather-gorecast .
+COPY --from=builder /go/src/$PACKAGE_SOURCE/$PACKAGE_APP service
 
 # Run the binary as per usual! This time with a binary build in a
 # separate container, with all of the correct dependencies and
 # run time libraries.
-CMD ["./weather-gorecast"]
+CMD ["/app/service"]
