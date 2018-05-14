@@ -21,6 +21,8 @@ func (mw cachingMiddleware) GetForecast(lat float32, lon float32) (output *Forec
 		return &retVal, nil
 	}
 	output, err = mw.next.GetForecast(lat, lon)
-	mw.cache.Set(key, *output, cache.DefaultExpiration)
+	if err == nil {
+		mw.cache.Set(key, *output, cache.DefaultExpiration)
+	}
 	return
 }
