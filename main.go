@@ -4,13 +4,14 @@ import (
 	"net/http"
 	"os"
 
-	stdprometheus "github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"time"
+
 	"github.com/go-kit/kit/log"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	httptransport "github.com/go-kit/kit/transport/http"
-	"time"
 	"github.com/patrickmn/go-cache"
+	stdprometheus "github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
@@ -45,7 +46,7 @@ func main() {
 	svc = instrumentingMiddleware{requestCount, requestLatency, countResult, svc}
 
 	forecastHandler := httptransport.NewServer(
-		makeUppercaseEndpoint(svc),
+		makeForecastEndpoint(svc),
 		decodeGetForecastRequest,
 		encodeResponse,
 	)
