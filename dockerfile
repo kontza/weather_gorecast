@@ -5,11 +5,12 @@ ARG PACKAGE_APP
 
 # Basic requirements.
 RUN apk update \
-    && apk --no-cache add git \
-    && go get -u $PACKAGE_SOURCE
+ && apk --no-cache add git \
+ && go get -u $PACKAGE_SOURCE
 
 # Set our workdir to our current service in the gopath
 WORKDIR $GOPATH/src/$PACKAGE_SOURCE
+COPY . .
 
 # Here we're pulling in godep, which is a dependency manager tool,
 # we're going to use dep instead of go get, to get around a few
@@ -22,7 +23,7 @@ RUN dep ensure
 
 # Build the binary, with a few flags which will allow
 # us to run this binary in Alpine.
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo .
+RUN CGO_ENABLED=0 GOOS=linux go build -a .
 
 # Here we're using a second FROM statement, which is strange,
 # but this tells Docker to start a new build process with this
