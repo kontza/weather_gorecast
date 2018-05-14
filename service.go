@@ -1,14 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
 	"github.com/spf13/viper"
-	"encoding/json"
-	"github.com/go-kit/kit/log"
-	"os"
 )
 
 // ForecastService provides operations on strings.
@@ -135,6 +134,10 @@ func buildUrl(lat float32, lon float32) (string, error) {
 	}
 
 	q := req.URL.Query()
+	apiKey := viper.GetString("api_key")
+	if len(apiKey) == 0 {
+		return "", errors.New("api_key not defined")
+	}
 	q.Add("appid", viper.GetString("api_key"))
 	q.Add("lat", fmt.Sprintf("%.6f", lat))
 	q.Add("lon", fmt.Sprintf("%.6f", lon))
@@ -144,7 +147,6 @@ func buildUrl(lat float32, lon float32) (string, error) {
 }
 
 func (forecastService) GetForecast(lat float32, lon float32) (*ForecastAPIResponse, error) {
-	logger := log.NewLogfmtLogger(os.Stderr)
 	var err error
 	if err = readConfig(); err != nil {
 		return nil, err
@@ -153,7 +155,6 @@ func (forecastService) GetForecast(lat float32, lon float32) (*ForecastAPIRespon
 	if url, err = buildUrl(lat, lon); err != nil {
 		return nil, err
 	}
-	logger.Log("lat", lat, "lon", lon, "url", url)
 	var response *http.Response
 	if response, err = http.Get(url); err != nil {
 		return nil, err
@@ -166,7 +167,6 @@ func (forecastService) GetForecast(lat float32, lon float32) (*ForecastAPIRespon
 	}
 	var retVal ForecastAPIResponse
 	err = json.Unmarshal(contents, &retVal)
-	logger.Log("lat", lat, "lon", lon, "url", url, fmt.Sprintf("%v", retVal.City.Coord))
 	return &retVal, nil
 }
 
