@@ -5,11 +5,15 @@ This is the Go-part of the KIKY 2018 -demonstration.
 Add this to your main `docker-compose.yml`:
 
 ```yaml
-  gorecast:
-    container_name: gorecast
+  weather-gorecast:
+    container_name: weather-gorecast
     build:
-      context: weather_gorecast
+      context: weather-gorecast
       args:
         - PACKAGE_SOURCE=github.com/kontza/weather_gorecast
         - PACKAGE_APP=weather_gorecast
+    volumes:
+      - ./gorecast_config.yaml:/app/config.yaml
+    ports:
+      - "58080:58080"
 ```
