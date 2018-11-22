@@ -15,5 +15,5 @@ Add this to your main `docker-compose.yml`:
     volumes:
       - ./gorecast_config.yaml:/app/config.yaml
     ports:
-      - "58080:58080"
+      - 58080:58080
 ```

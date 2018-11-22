@@ -50,3 +50,5 @@ COPY --from=builder /go/src/$PACKAGE_SOURCE/$PACKAGE_APP service
 # separate container, with all of the correct dependencies and
 # run time libraries.
 CMD ["/app/service"]
+
+EXPOSE 58080
