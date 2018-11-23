@@ -56,6 +56,6 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 # Run the binary as per usual! This time with a binary build in a
 # separate container, with all of the correct dependencies and
 # run time libraries.
-CMD dockerize -timeout 60s -wait-retry-interval 5s -wait tcp://liferay-dxp-7.1:8080 /app/service
+CMD dockerize -timeout 60s -wait-retry-interval 5s -wait tcp://liferay-dxp-7-1:8080 /app/service
 
 EXPOSE 58080
